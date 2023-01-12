@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ejs</title>
+    <script>
+      fetch("/showPost", { method: "GET" })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          const reversedData = data.reverse();
+          const list = document.getElementById("list");
+
+          for (const item of reversedData) {
+            const text = document.createElement("div");
+            text.textContent = item.text;
+
+            const img = document.createElement("img");
+            img.src = item.img;
+            img.style.width = "400px";
+            img.style.height = "400px";
+
+            const hr = document.createElement("hr");
+
+            list.appendChild(text);
+            list.appendChild(img);
+            list.appendChild(hr);
+          }
+        });
+    </script>
+  </head>
+  <body>
+    <div>發表一篇圖文</div>
+    <form
+      id="upload-form"
+      action="/upload"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      文字內容<input type="text" id="text" /> 圖片檔案<input
+        type="file"
+        id="upload-input"
+        name="upload"
+      />
+      <button type="submit" id="upload-button">送出</button>
+    </form>
+    <hr />
+    <div id="list"></div>
+    <script>
+      document
+        .getElementById("upload-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const text = document.getElementById("text").value;
+          const file = document.getElementById("upload-input").files[0];
+          const lowerCaseType = file.type.toLowerCase();
+          if (
+            lowerCaseType.endsWith("png") ||
+            lowerCaseType.endsWith("jpg") ||
+            lowerCaseType.endsWith("jpeg") ||
+            lowerCaseType.endsWith("gif")
+          ) {
+            const fileName = encodeURIComponent(file.name);
+            const formData = new FormData();
+            formData.append("text", text);
+            formData.append("upload", file, fileName);
+
+            fetch("/upload", {
+              method: "POST",
+              body: formData,
+            })
+              .then((response) => {
+                if (response.ok) {
+                  console.log(response);
+                  window.location.reload();
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          } else {
+            alert("非圖片檔案，請重新選擇");
+          }
+        });
+    </script>
+  </body>
+</html>
