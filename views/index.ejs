@@ -44,7 +44,7 @@
         id="upload-input"
         name="upload"
       />
-      <button type="submit" id="upload-button">送出</button>
+      <button type="submit" id="submit-btn">送出</button>
     </form>
     <hr />
     <div id="list"></div>
@@ -68,12 +68,16 @@
             formData.append("text", text);
             formData.append("upload", file, fileName);
 
+            const submitBtn = document.getElementById("submit-btn");
+            submitBtn.disabled = true;
+
             fetch("/upload", {
               method: "POST",
               body: formData,
             })
               .then((response) => {
                 if (response.ok) {
+                  submitBtn.disabled = false;
                   window.location.reload();
                 }
               })
