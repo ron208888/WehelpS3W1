@@ -5,6 +5,7 @@ const AWS = require("aws-sdk");
 const mysql = require("mysql");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const uuid = require("uuid");
 
 require("dotenv").config();
 app.use(express.static("public"));
@@ -32,7 +33,7 @@ app.post("/upload", upload.single("upload"), (req, res) => {
 
   const params = {
     Bucket: "ron208888/images",
-    Key: fileName,
+    Key: fileName + uuid.v4(),
     Body: file.buffer,
     ContentType: file.mimetype,
   };
